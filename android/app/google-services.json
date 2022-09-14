@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "285133471167",
+    "firebase_url": "https://tiksiavia-271b8-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "tiksiavia-271b8",
+    "storage_bucket": "tiksiavia-271b8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285133471167:android:c86145ae0719a089d9350a",
+        "android_client_info": {
+          "package_name": "com.ArtemOslopov.tiksiAvia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "285133471167-366p0umvrvh959bgko4umcarg9iqgo4p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ArtemOslopov.tiksiAvia",
+            "certificate_hash": "7ece8e329d438fd1863a760825b8b9a5012fa74e"
+          }
+        },
+        {
+          "client_id": "285133471167-prcpstov0b057e71ov370mi8j4a1rc21.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWTD3HWaM47kxPrByV33wxWEskLQ3OHsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "285133471167-prcpstov0b057e71ov370mi8j4a1rc21.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
