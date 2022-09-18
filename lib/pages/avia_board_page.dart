@@ -98,7 +98,7 @@ class AviaBoardPageState extends RouteAwareState<AviaBoardPage> {
     bool auth = fb.isAuthenticated();
 
     return DefaultTabController(
-      initialIndex: 1,
+      initialIndex: 0,
       length: 2,
       child: Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
@@ -141,158 +141,146 @@ class AviaBoardPageState extends RouteAwareState<AviaBoardPage> {
           ),
         ),
         drawer: Drawer(
-          child: Stack(
-            children: [
-              Container(
-                color: Theme.of(context).appBarTheme.backgroundColor,
-              ),
-              Container(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top,
-                  bottom: 4,
-                  right: 4,
-                  left: 4,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          child: Container(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top,
+              bottom: 4,
+              right: 4,
+              left: 4,
+            ),
+            child: Column(
+              children: [
+                Container(
+                  height: 8,
                 ),
-                child: Column(
+                Row(
                   children: [
                     Container(
-                      height: 8,
+                      margin: const EdgeInsets.only(right: 16, left: 12),
+                      child: Image.asset(
+                        "assets/tiksiAvia.png",
+                        width: height * 0.1,
+                        height: height * 0.1,
+                      ),
                     ),
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          margin: const EdgeInsets.only(right: 16, left: 12),
-                          child: Image.asset(
-                            "assets/tiksiAvia.png",
-                            width: height * 0.1,
-                            height: height * 0.1,
+                        const Text(
+                          "TiksiAvia",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "TiksiAvia",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              "by Oslopov",
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.light
+                        Text(
+                          "by Oslopov",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
                                     ? const Color(0xFF6D7885)
                                     : const Color(0xFF909499),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                        Expanded(child: Container()),
                       ],
-                    ),
-                    Container(
-                      height: 16,
-                    ),
-                    DrawerButton(
-                      icon: SvgPicture.asset(
-                        "assets/user_icon.svg",
-                        color: Theme.of(context).appBarTheme.iconTheme!.color,
-                        width: 28,
-                        height: 28,
-                      ),
-                      text: auth ? "Admin панель" : "Войти в аккаунт",
-                      onClick: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) =>
-                                auth ? const AccountPage() : const AuthPage(),
-                          ),
-                        );
-                      },
-                    ),
-                    DrawerButton(
-                      icon: SvgPicture.asset(
-                        "assets/settings_icon.svg",
-                        color: Theme.of(context).appBarTheme.iconTheme!.color,
-                        width: 28,
-                        height: 28,
-                      ),
-                      text: "Настройки",
-                      onClick: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => const SettingsPage(),
-                          ),
-                        );
-                      },
                     ),
                     Expanded(child: Container()),
-                    getSeporator(),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DrawerButton(
-                            icon: SvgPicture.asset(
-                              'assets/all_categories_icon.svg',
-                              color: Theme.of(context)
-                                  .appBarTheme
-                                  .iconTheme!
-                                  .color,
-                              width: 28,
-                              height: 28,
-                            ),
-                            fontSize: 16,
-                            text: "Другие приложения",
-                            onClick: () => _launchURL(),
-                          ),
-                        ),
-                        Container(
-                          width: 16,
-                        ),
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(100),
-                            onLongPress: () => Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) =>
-                                        const SettingsPage())),
-                            onTap: () =>
-                                Theme.of(context).brightness == Brightness.light
-                                    ? settings.put('theme', 'dark')
-                                    : settings.put('theme', 'light'),
-                            child: Container(
-                              width: 36,
-                              height: 36,
-                              padding: const EdgeInsets.all(4),
-                              child: SvgPicture.asset(
-                                Theme.of(context).brightness == Brightness.light
-                                    ? 'assets/moon_icon.svg'
-                                    : 'assets/sun_icon.svg',
-                                color: Theme.of(context)
-                                    .appBarTheme
-                                    .iconTheme!
-                                    .color,
-                                height: 28,
-                                width: 28,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(width: 6),
-                      ],
-                    ),
                   ],
                 ),
-              ),
-            ],
+                Container(
+                  height: 16,
+                ),
+                DrawerButton(
+                  icon: SvgPicture.asset(
+                    "assets/user_icon.svg",
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    width: 28,
+                    height: 28,
+                  ),
+                  text: auth ? "Admin панель" : "Войти в аккаунт",
+                  onClick: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) =>
+                            auth ? const AccountPage() : const AuthPage(),
+                      ),
+                    );
+                  },
+                ),
+                DrawerButton(
+                  icon: SvgPicture.asset(
+                    "assets/settings_icon.svg",
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    width: 28,
+                    height: 28,
+                  ),
+                  text: "Настройки",
+                  onClick: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => const SettingsPage(),
+                      ),
+                    );
+                  },
+                ),
+                Expanded(child: Container()),
+                getSeporator(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DrawerButton(
+                        icon: SvgPicture.asset(
+                          'assets/all_categories_icon.svg',
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                          width: 28,
+                          height: 28,
+                        ),
+                        fontSize: 16,
+                        text: "Другие приложения",
+                        onClick: () => _launchURL(),
+                      ),
+                    ),
+                    Container(
+                      width: 16,
+                    ),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(100),
+                        onLongPress: () => Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) => const SettingsPage())),
+                        onTap: () =>
+                            Theme.of(context).brightness == Brightness.light
+                                ? settings.put('theme', 'dark')
+                                : settings.put('theme', 'light'),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          padding: const EdgeInsets.all(4),
+                          child: SvgPicture.asset(
+                            Theme.of(context).brightness == Brightness.light
+                                ? 'assets/moon_icon.svg'
+                                : 'assets/sun_icon.svg',
+                            color:
+                                Theme.of(context).appBarTheme.iconTheme!.color,
+                            height: 28,
+                            width: 28,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(width: 6),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         body: Container(
