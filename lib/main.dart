@@ -61,6 +61,7 @@ class MyApp extends StatelessWidget {
             Locale('ru'),
           ],
           theme: ThemeData(
+            useMaterial3: true,
             splashFactory: InkRipple.splashFactory,
             primaryColor: const Color(0xFF2688EB),
             cardTheme: CardTheme(
@@ -99,6 +100,7 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: Colors.white,
           ),
           darkTheme: ThemeData(
+            useMaterial3: true,
             splashFactory: InkRipple.splashFactory,
             primaryColor: Colors.white,
             primaryColorLight: const Color(0xFF71AAEB),
