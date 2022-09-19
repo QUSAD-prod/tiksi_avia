@@ -22,6 +22,7 @@ class Input extends StatelessWidget {
     this.autofillHints,
     this.labelText,
     this.readOnly = false,
+    this.suffixIcon,
   }) : super(key: key);
 
   final String hint;
@@ -42,6 +43,7 @@ class Input extends StatelessWidget {
   final Iterable<String>? autofillHints;
   final String? labelText;
   final bool readOnly;
+  final Widget? suffixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +67,7 @@ class Input extends StatelessWidget {
         fontSize: 16,
       ),
       decoration: InputDecoration(
+        suffixIcon: suffixIcon,
         labelText: labelText,
         counterStyle: const TextStyle(
           fontSize: 12,

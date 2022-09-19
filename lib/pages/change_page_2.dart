@@ -31,14 +31,34 @@ class ChangePage2State extends State<ChangePage2> {
   TimeOfDay arrivalTime = const TimeOfDay(hour: 12, minute: 30);
 
   TextEditingController _dateController = TextEditingController();
-  TextEditingController _nameController = TextEditingController();
   TextEditingController _companyController = TextEditingController();
   TextEditingController _departureController = TextEditingController();
   TextEditingController _arrivalController = TextEditingController();
   TextEditingController _statusController = TextEditingController();
 
+  static List<String> flights = [
+    "Тикси - Борогон",
+    "Борогон - Тикси",
+    "Тикси - Хара-Улах",
+    "Хара-Улах - Тикси",
+    "Тикси - Булун",
+    "Булун - Тикси",
+    "Тикси - Таймылыр",
+    "Таймылыр - Тикси",
+    "Тикси - Сиктях",
+    "Сиктях - Тикси",
+    "Тикси - Якутск",
+    "Якутск - Тикси",
+    "Тикси - Кюсюр",
+    "Кюсюр - Тикси",
+    "Тикси - Москва",
+    "Москва - Тикси",
+    "Тикси - Булун-Сиктях",
+    "Тикси - Борогон-Хара-Улах",
+  ];
+
   String date = '';
-  String name = '';
+  String name = flights[0];
   String company = '';
   String departure = '';
   String arrival = '';
@@ -56,7 +76,6 @@ class ChangePage2State extends State<ChangePage2> {
     arrival = widget.data['arrival'];
     status = widget.data['status'];
     _dateController = TextEditingController(text: dateFormat(widget.date));
-    _nameController = TextEditingController(text: name);
     _companyController = TextEditingController(text: company);
     _departureController = TextEditingController(text: departure);
     _arrivalController = TextEditingController(text: arrival);
@@ -129,6 +148,13 @@ class ChangePage2State extends State<ChangePage2> {
                             controller: _dateController,
                             isPass: false,
                             readOnly: true,
+                            suffixIcon: Icon(
+                              Icons.more_horiz,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
                           ),
                         ),
                       ),
@@ -136,11 +162,63 @@ class ChangePage2State extends State<ChangePage2> {
                         margin: const EdgeInsets.only(top: 8.0),
                         child: FormItem(
                           title: "Имя рейса",
-                          child: Input(
-                            hint: "Имя рейса",
-                            controller: _nameController,
-                            isPass: false,
-                            readOnly: true,
+                          child: DropdownButtonFormField<String>(
+                            value: name,
+                            items: flights.map<DropdownMenuItem<String>>(
+                              (String val) {
+                                Text temp = Text(val.toString());
+                                return DropdownMenuItem(
+                                  value: val,
+                                  child: temp,
+                                );
+                              },
+                            ).toList(),
+                            onChanged: (val) {
+                              setState(
+                                () {
+                                  name = val ?? "";
+                                },
+                              );
+                            },
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                              fontSize: 16,
+                            ),
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(12.0),
+                              fillColor: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? const Color(0xFFf2F3F5)
+                                  : const Color(0xFF2C2D2E),
+                              filled: true,
+                              hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Theme.of(context).primaryColor
+                                      : Theme.of(context).primaryColorLight,
+                                  width: 1,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.black.withOpacity(0.12)
+                                      : Colors.white.withOpacity(0.12),
+                                  width: 0.5,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -168,6 +246,13 @@ class ChangePage2State extends State<ChangePage2> {
                             onTap: () {
                               changeTime(0);
                             },
+                            suffixIcon: Icon(
+                              Icons.more_horiz,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
                           ),
                         ),
                       ),
@@ -183,6 +268,13 @@ class ChangePage2State extends State<ChangePage2> {
                             onTap: () {
                               changeTime(1);
                             },
+                            suffixIcon: Icon(
+                              Icons.more_horiz,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
                           ),
                         ),
                       ),

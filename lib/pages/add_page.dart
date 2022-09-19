@@ -23,16 +23,35 @@ class AddPageState extends State<AddPage> {
   TimeOfDay arrivalTime = const TimeOfDay(hour: 12, minute: 30);
 
   TextEditingController _dateController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _companyController = TextEditingController();
   TextEditingController _departureController =
       TextEditingController(text: '12:00');
   TextEditingController _arrivalController =
       TextEditingController(text: '12:30');
   final TextEditingController _statusController = TextEditingController();
+  static List<String> flights = [
+    "Тикси - Борогон",
+    "Борогон - Тикси",
+    "Тикси - Хара-Улах",
+    "Хара-Улах - Тикси",
+    "Тикси - Булун",
+    "Булун - Тикси",
+    "Тикси - Таймылыр",
+    "Таймылыр - Тикси",
+    "Тикси - Сиктях",
+    "Сиктях - Тикси",
+    "Тикси - Якутск",
+    "Якутск - Тикси",
+    "Тикси - Кюсюр",
+    "Кюсюр - Тикси",
+    "Тикси - Москва",
+    "Москва - Тикси",
+    "Тикси - Булун-Сиктях",
+    "Тикси - Борогон-Хара-Улах",
+  ];
 
   String date = '';
-  String name = '';
+  String name = flights[0];
   String company = '';
   String departure = '12:00';
   String arrival = '12:30';
@@ -44,8 +63,6 @@ class AddPageState extends State<AddPage> {
   void initState() {
     super.initState();
     _dateController = TextEditingController(text: dateFormat(selectedDate));
-    _nameController
-        .addListener(() => setState(() => name = _nameController.text));
     _companyController
         .addListener(() => setState(() => company = _companyController.text));
     _statusController
@@ -54,7 +71,6 @@ class AddPageState extends State<AddPage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _companyController.dispose();
     _statusController.dispose();
     super.dispose();
@@ -116,6 +132,13 @@ class AddPageState extends State<AddPage> {
                             onTap: () {
                               changeDate();
                             },
+                            suffixIcon: Icon(
+                              Icons.more_horiz,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
                           ),
                         ),
                       ),
@@ -123,10 +146,63 @@ class AddPageState extends State<AddPage> {
                         margin: const EdgeInsets.only(top: 8.0),
                         child: FormItem(
                           title: "Имя рейса",
-                          child: Input(
-                            hint: "Имя рейса",
-                            controller: _nameController,
-                            isPass: false,
+                          child: DropdownButtonFormField<String>(
+                            value: name,
+                            items: flights.map<DropdownMenuItem<String>>(
+                              (String val) {
+                                Text temp = Text(val.toString());
+                                return DropdownMenuItem(
+                                  value: val,
+                                  child: temp,
+                                );
+                              },
+                            ).toList(),
+                            onChanged: (val) {
+                              setState(
+                                () {
+                                  name = val ?? "";
+                                },
+                              );
+                            },
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                              fontSize: 16,
+                            ),
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(12.0),
+                              fillColor: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? const Color(0xFFf2F3F5)
+                                  : const Color(0xFF2C2D2E),
+                              filled: true,
+                              hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Theme.of(context).primaryColor
+                                      : Theme.of(context).primaryColorLight,
+                                  width: 1,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.black.withOpacity(0.12)
+                                      : Colors.white.withOpacity(0.12),
+                                  width: 0.5,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -153,6 +229,13 @@ class AddPageState extends State<AddPage> {
                             onTap: () {
                               changeTime(0);
                             },
+                            suffixIcon: Icon(
+                              Icons.more_horiz,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
                           ),
                         ),
                       ),
@@ -168,6 +251,13 @@ class AddPageState extends State<AddPage> {
                             onTap: () {
                               changeTime(1);
                             },
+                            suffixIcon: Icon(
+                              Icons.more_horiz,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
                           ),
                         ),
                       ),
