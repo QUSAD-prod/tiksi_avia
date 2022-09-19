@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
               shadowColor: const Color(0xFF000000).withOpacity(0.08),
             ),
             appBarTheme: const AppBarTheme(
+              surfaceTintColor: Colors.transparent,
               backgroundColor: Colors.white,
               actionsIconTheme: IconThemeData(color: Color(0xFF2688EB)),
               iconTheme: IconThemeData(color: Color(0xFF2688EB)),
@@ -109,6 +110,7 @@ class MyApp extends StatelessWidget {
               shadowColor: const Color(0xFF000000).withOpacity(0.08),
             ),
             appBarTheme: const AppBarTheme(
+              surfaceTintColor: Colors.transparent,
               backgroundColor: Color(0xFF19191A),
               actionsIconTheme: IconThemeData(color: Color(0xFF71AAEB)),
               iconTheme: IconThemeData(color: Color(0xFF71AAEB)),

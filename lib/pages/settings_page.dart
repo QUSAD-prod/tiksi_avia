@@ -1,8 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:package_info/package_info.dart';
 import 'package:tiksi_avia/components/settings_button.dart';
 import 'package:tiksi_avia/components/text.dart';
+import 'package:tiksi_avia/pages/notification_settings_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -12,6 +15,26 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> with RouteAware {
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _initPackageInfo();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,14 +64,41 @@ class SettingsPageState extends State<SettingsPage> with RouteAware {
             children: [
               getSeporator(),
               getName('УВЕДОМЛЕНИЯ'),
-              const SettingsButton(
-                text: 'Уведомления',
-                description: 'Скоро',
-                //value: box.get('notifications', defaultValue: 'on') == 'on',
-                value: false,
-                // onClickSwitch: (value) =>
-                //     {box.put('notifications', value ? 'on' : 'off')},
-                settingsButtonMode: SettingsButtonMode.switchBt,
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (BuildContext context) =>
+                          const NotificationSettingsPage(),
+                    ),
+                  ),
+                  highlightColor:
+                      Theme.of(context).brightness == Brightness.light
+                          ? const Color(0xFFEBEBEB)
+                          : const Color(0xFF2B2B2B),
+                  splashFactory: InkRipple.splashFactory,
+                  child: Container(
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: Row(
+                      children: const [
+                        Expanded(
+                          child: Text(
+                            "Параметры уведомлений",
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               getSeporator(),
               getName('ТЕМЫ'),
@@ -83,6 +133,7 @@ class SettingsPageState extends State<SettingsPage> with RouteAware {
                       height: 24,
                     ),
                     const Expanded(
+                      flex: 2,
                       child: Text(
                         "Версия приложения:",
                         style: TextStyle(
@@ -91,15 +142,13 @@ class SettingsPageState extends State<SettingsPage> with RouteAware {
                         ),
                       ),
                     ),
-                    Container(width: 16),
-                    const SizedBox(
-                      width: 59,
-                      child: Center(
-                        child: SecondaryText(
-                          text: "1.1.1",
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
+                    Expanded(
+                      flex: 1,
+                      child: SecondaryText(
+                        text: _packageInfo.version,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        textAlign: TextAlign.end,
                       ),
                     ),
                   ],
