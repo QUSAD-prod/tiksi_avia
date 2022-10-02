@@ -37,9 +37,6 @@ class SettingsButton extends StatelessWidget {
         highlightColor: Theme.of(context).brightness == Brightness.light
             ? const Color(0xFFEBEBEB)
             : const Color(0xFF2B2B2B),
-        // splashColor: Theme.of(context).brightness == Brightness.light
-        //     ? const Color(0xFFEBEBEB)
-        //     : const Color(0xFF2B2B2B),
         splashFactory: InkRipple.splashFactory,
         child: Container(
           height: 48,

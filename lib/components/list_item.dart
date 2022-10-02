@@ -54,7 +54,7 @@ class VkListItem extends StatelessWidget {
           ),
           Container(height: 8.0),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SvgPicture.asset(
                 "assets/articles.svg",
@@ -89,7 +89,7 @@ class VkListItem extends StatelessWidget {
             height: 2.0,
           ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -139,7 +139,7 @@ class VkListItem extends StatelessWidget {
             height: 2.0,
           ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -189,7 +189,7 @@ class VkListItem extends StatelessWidget {
             height: 2.0,
           ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
                 Icons.help_outline,

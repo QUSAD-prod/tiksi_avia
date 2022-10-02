@@ -30,11 +30,13 @@ class ChangePage2State extends State<ChangePage2> {
   TimeOfDay departureTime = const TimeOfDay(hour: 12, minute: 00);
   TimeOfDay arrivalTime = const TimeOfDay(hour: 12, minute: 30);
 
-  TextEditingController _dateController = TextEditingController();
-  TextEditingController _companyController = TextEditingController();
   TextEditingController _departureController = TextEditingController();
   TextEditingController _arrivalController = TextEditingController();
   TextEditingController _statusController = TextEditingController();
+
+  late FocusNode _departureFocus;
+  late FocusNode _arrivalFocus;
+  late FocusNode _statusFocus;
 
   static List<String> flights = [
     "Тикси - Борогон",
@@ -75,11 +77,12 @@ class ChangePage2State extends State<ChangePage2> {
     departure = widget.data['departure'];
     arrival = widget.data['arrival'];
     status = widget.data['status'];
-    _dateController = TextEditingController(text: dateFormat(widget.date));
-    _companyController = TextEditingController(text: company);
     _departureController = TextEditingController(text: departure);
     _arrivalController = TextEditingController(text: arrival);
     _statusController = TextEditingController(text: status);
+    _departureFocus = FocusNode(debugLabel: 'departureFocus');
+    _arrivalFocus = FocusNode(debugLabel: 'arrivalFocus');
+    _statusFocus = FocusNode(debugLabel: 'statusFocus');
     departureTime = TimeOfDay(
         hour: int.parse(departure.split(':')[0]),
         minute: int.parse(departure.split(':')[1]));
@@ -93,12 +96,16 @@ class ChangePage2State extends State<ChangePage2> {
   @override
   void dispose() {
     _statusController.dispose();
+    _arrivalFocus.dispose();
+    _departureFocus.dispose();
+    _statusFocus.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     buttonAvaible = check();
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Редактирование рейса"),
@@ -143,17 +150,10 @@ class ChangePage2State extends State<ChangePage2> {
                         margin: const EdgeInsets.only(top: 8.0),
                         child: FormItem(
                           title: 'Дата',
-                          child: Input(
-                            hint: 'Дата',
-                            controller: _dateController,
-                            isPass: false,
-                            readOnly: true,
-                            suffixIcon: Icon(
-                              Icons.more_horiz,
-                              color: Theme.of(context)
-                                  .appBarTheme
-                                  .titleTextStyle!
-                                  .color,
+                          child: Text(
+                            date,
+                            style: TextStyle(
+                              fontSize: height * 0.03,
                             ),
                           ),
                         ),
@@ -162,63 +162,17 @@ class ChangePage2State extends State<ChangePage2> {
                         margin: const EdgeInsets.only(top: 8.0),
                         child: FormItem(
                           title: "Имя рейса",
-                          child: DropdownButtonFormField<String>(
-                            value: name,
-                            items: flights.map<DropdownMenuItem<String>>(
-                              (String val) {
-                                Text temp = Text(val.toString());
-                                return DropdownMenuItem(
-                                  value: val,
-                                  child: temp,
-                                );
-                              },
-                            ).toList(),
-                            onChanged: (val) {
-                              setState(
-                                () {
-                                  name = val ?? "";
-                                },
-                              );
-                            },
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .appBarTheme
-                                  .titleTextStyle!
-                                  .color,
-                              fontSize: 16,
-                            ),
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.all(12.0),
-                              fillColor: Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? const Color(0xFFf2F3F5)
-                                  : const Color(0xFF2C2D2E),
-                              filled: true,
-                              hintStyle: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.light
-                                      ? Theme.of(context).primaryColor
-                                      : Theme.of(context).primaryColorLight,
-                                  width: 1,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Text(
+                                name,
+                                style: TextStyle(
+                                  fontSize: height * 0.03,
                                 ),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.light
-                                      ? Colors.black.withOpacity(0.12)
-                                      : Colors.white.withOpacity(0.12),
-                                  width: 0.5,
-                                ),
-                              ),
-                            ),
+                              Expanded(child: Container())
+                            ],
                           ),
                         ),
                       ),
@@ -226,11 +180,17 @@ class ChangePage2State extends State<ChangePage2> {
                         margin: const EdgeInsets.only(top: 8.0),
                         child: FormItem(
                           title: 'Компания',
-                          child: Input(
-                            hint: 'Компания',
-                            controller: _companyController,
-                            isPass: false,
-                            readOnly: true,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Text(
+                                company,
+                                style: TextStyle(
+                                  fontSize: height * 0.03,
+                                ),
+                              ),
+                              Expanded(child: Container())
+                            ],
                           ),
                         ),
                       ),
@@ -241,6 +201,7 @@ class ChangePage2State extends State<ChangePage2> {
                           child: Input(
                             hint: 'Вылет',
                             controller: _departureController,
+                            focusNode: _departureFocus,
                             isPass: false,
                             readOnly: true,
                             onTap: () {
@@ -263,6 +224,7 @@ class ChangePage2State extends State<ChangePage2> {
                           child: Input(
                             hint: 'Прилёт',
                             controller: _arrivalController,
+                            focusNode: _arrivalFocus,
                             isPass: false,
                             readOnly: true,
                             onTap: () {
@@ -285,12 +247,24 @@ class ChangePage2State extends State<ChangePage2> {
                           child: Input(
                             hint: 'Статус',
                             controller: _statusController,
+                            focusNode: _statusFocus,
                             isPass: false,
+                            suffixIcon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
+                            onSubmit: (String text) {
+                              _statusFocus.unfocus();
+                              send();
+                            },
                           ),
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.symmetric(vertical: 12.0),
+                        margin: const EdgeInsets.symmetric(vertical: 14.0),
                         child: Button(
                           active: !awaitSend && buttonAvaible,
                           text: "Сохранить изменения",

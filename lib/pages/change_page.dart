@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:tiksi_avia/components/list_change_item.dart';
 import 'package:tiksi_avia/components/spinner.dart';
+import 'package:tiksi_avia/components/text.dart';
 import 'package:tiksi_avia/pages/settings_page.dart';
 
 import 'change_page_2.dart';
@@ -31,10 +32,15 @@ class ChangePageState extends State<ChangePage> {
         FirebaseDatabase.instance.ref().child(dateFormat(selectedDate));
     databaseReference.onValue.listen(
       (event) {
-        data.put('change', event.snapshot.value ?? []);
+        data.put('change', event.snapshot.value ?? [0]);
       },
     );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -83,28 +89,35 @@ class ChangePageState extends State<ChangePage> {
         child: ValueListenableBuilder(
           valueListenable: data.listenable(),
           builder: (BuildContext context, Box<dynamic> box, Widget? widget) {
-            List<Map<dynamic, dynamic>> list = List.from(
+            List list = List.from(
               box.get('change', defaultValue: []),
             );
             return list.isNotEmpty
-                ? ScrollConfiguration(
-                    behavior: MyBehavior(),
-                    child: ListView.builder(
-                      itemCount: list.length,
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: (BuildContext context, int id) {
-                        return Container(
-                          margin: const EdgeInsets.only(top: 12.0),
-                          child: VkListChangeItem(
-                            data: list[id],
-                            delTap: () => del((list[id])["id"]),
-                            penTap: () => change(id, list[id]),
-                            delActive: delAvaible,
-                          ),
-                        );
-                      },
-                    ),
-                  )
+                ? list[0] == 0
+                    ? Center(
+                        child: SecondaryText(
+                          text: "На ${getDate(selectedDate)} рейсов не найдено",
+                          fontSize: 16,
+                        ),
+                      )
+                    : ScrollConfiguration(
+                        behavior: MyBehavior(),
+                        child: ListView.builder(
+                          itemCount: list.length,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (BuildContext context, int id) {
+                            return Container(
+                              margin: const EdgeInsets.only(top: 12.0),
+                              child: VkListChangeItem(
+                                data: list[id],
+                                delTap: () => del(id),
+                                penTap: () => change(id, list[id]),
+                                delActive: delAvaible,
+                              ),
+                            );
+                          },
+                        ),
+                      )
                 : const Center(
                     child: Spinner(),
                   );
@@ -112,6 +125,10 @@ class ChangePageState extends State<ChangePage> {
         ),
       ),
     );
+  }
+
+  String getDate(DateTime currentDate) {
+    return "${currentDate.day.toString()}.${currentDate.month.toString()}.${currentDate.year.toString()}";
   }
 
   void del(int id) async {
@@ -134,7 +151,6 @@ class ChangePageState extends State<ChangePage> {
         }
         for (int i = 0; i < list2.length; i++) {
           Map<dynamic, dynamic> data = list2[i];
-          data.update("id", (value) => i);
           list2.setAll(i, {data});
         }
         temp.set(list2);
@@ -245,7 +261,7 @@ class ChangePageState extends State<ChangePage> {
           databaseReference =
               FirebaseDatabase.instance.ref().child(dateFormat(selectedDate));
           databaseReference.onValue.listen((event) {
-            data.put('change', event.snapshot.value ?? []);
+            data.put('change', event.snapshot.value ?? [0]);
           });
         },
       );

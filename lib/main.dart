@@ -1,10 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tiksi_avia/pages/splash_screen.dart';
+
+Future<void> _messageHandler(RemoteMessage message) async {}
 
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
@@ -14,9 +17,11 @@ Future<void> main() async {
   );
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await Hive.initFlutter();
   await Hive.openBox<dynamic>('settings');
   await Hive.openBox<dynamic>('data');
+  await Hive.openBox<dynamic>("notification settings");
   runApp(MyApp());
 }
 

@@ -301,6 +301,7 @@ class AviaBoardPageState extends RouteAwareState<AviaBoardPage> {
                           ? const Center(
                               child: SecondaryText(
                                 text: "На сегодня рейсов не найдено",
+                                fontSize: 16,
                               ),
                             )
                           : ScrollConfiguration(
@@ -334,6 +335,7 @@ class AviaBoardPageState extends RouteAwareState<AviaBoardPage> {
                           ? const Center(
                               child: SecondaryText(
                                 text: "На завтра рейсов не найдено",
+                                fontSize: 16,
                               ),
                             )
                           : ScrollConfiguration(

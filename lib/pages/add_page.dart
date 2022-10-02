@@ -214,6 +214,13 @@ class AddPageState extends State<AddPage> {
                             hint: 'Компания',
                             controller: _companyController,
                             isPass: false,
+                            suffixIcon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
                           ),
                         ),
                       ),
@@ -269,11 +276,18 @@ class AddPageState extends State<AddPage> {
                             hint: 'Статус',
                             controller: _statusController,
                             isPass: false,
+                            suffixIcon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .titleTextStyle!
+                                  .color,
+                            ),
                           ),
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.symmetric(vertical: 12.0),
+                        margin: const EdgeInsets.symmetric(vertical: 14.0),
                         child: Button(
                           active: !awaitSend && buttonAvaible,
                           text: "Добавить рейс",
@@ -404,9 +418,9 @@ class AddPageState extends State<AddPage> {
       },
     );
     if (temp != null) {
-      String time = "${temp.hour.toString()} :";
+      String time = "${temp.hour.toString()}:";
       String minute = temp.minute.toString().length == 1
-          ? "0 ${temp.minute.toString()}"
+          ? "0${temp.minute.toString()}"
           : temp.minute.toString();
       time += minute;
       setState(

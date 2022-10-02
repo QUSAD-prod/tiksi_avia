@@ -1,7 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tiksi_avia/components/spinner.dart';
 import 'package:tiksi_avia/pages/avia_board_page.dart';
+import 'package:tiksi_avia/pages/fb.dart';
 
 import '../components/settings_button.dart';
 import '../components/text.dart';
@@ -15,8 +18,18 @@ class NotificationSettingsPage extends StatefulWidget {
 }
 
 class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
+  Fb fb = Fb();
+
+  @override
+  void initState() {
+    Hive.box("notification settings").put("loading", false);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Параметры уведомлений'),
@@ -39,124 +52,81 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       body: ScrollConfiguration(
         behavior: MyBehavior(),
         child: ValueListenableBuilder(
-          valueListenable: Hive.box('settings').listenable(),
-          builder: (context, Box box, widget) => ListView(
-            physics: const BouncingScrollPhysics(),
+          valueListenable: Hive.box("notification settings").listenable(),
+          builder: (context, Box box, widget) => Stack(
             children: [
-              getSeporator(),
-              getName('РЕЙСЫ'),
-              SettingsButton(
-                text: "Тикси - Борогон",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
+              ListView(
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  getSeporator(),
+                  getName('РЕЙСЫ'),
+                  getSwitch("Тикси - Борогон", box),
+                  getSwitch("Борогон - Тикси", box),
+                  getSwitch("Тикси - Хара-Улах", box),
+                  getSwitch("Хара-Улах - Тикси", box),
+                  getSwitch("Тикси - Булун", box),
+                  getSwitch("Булун - Тикси", box),
+                  getSwitch("Тикси - Таймылыр", box),
+                  getSwitch("Таймылыр - Тикси", box),
+                  getSwitch("Тикси - Сиктях", box),
+                  getSwitch("Сиктях - Тикси", box),
+                  getSwitch("Тикси - Якутск", box),
+                  getSwitch("Якутск - Тикси", box),
+                  getSwitch("Тикси - Кюсюр", box),
+                  getSwitch("Кюсюр - Тикси", box),
+                  getSwitch("Тикси - Москва", box),
+                  getSwitch("Москва - Тикси", box),
+                  getSwitch("Тикси - Булун-Сиктях", box),
+                  getSwitch("Тикси - Борогон-Хара-Улах", box),
+                ],
               ),
-              SettingsButton(
-                text: "Борогон - Тикси",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Хара-Улах",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Хара-Улах - Тикси",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Булун",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Булун - Тикси",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Таймылыр",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Таймылыр - Тикси",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Сиктях",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Сиктях - Тикси",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Якутск",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Якутск - Тикси",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Кюсюр",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Кюсюр - Тикси",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Москва",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Москва - Тикси",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Булун-Сиктях",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
-              SettingsButton(
-                text: "Тикси - Борогон-Хара-Улах",
-                value: false,
-                onClickSelect: () => {},
-                settingsButtonMode: SettingsButtonMode.switchBt,
-              ),
+              box.get('loading', defaultValue: false)
+                  ? Container(
+                      width: width,
+                      height: height,
+                      color: Colors.black.withOpacity(0.7),
+                      child: const Center(
+                        child: Spinner(),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget getSwitch(String name, Box box) {
+    return SettingsButton(
+      text: name,
+      value: box.get(name, defaultValue: false),
+      onClickSwitch: (value) async {
+        bool result = true;
+        box.put("loading", true);
+        if (value) {
+          await FirebaseMessaging.instance
+              .subscribeToTopic(
+                fb.getTopic(name),
+              )
+              .timeout(
+                const Duration(seconds: 5),
+                onTimeout: () => result = false,
+              );
+        } else {
+          await FirebaseMessaging.instance
+              .unsubscribeFromTopic(
+                fb.getTopic(name),
+              )
+              .timeout(
+                const Duration(seconds: 5),
+                onTimeout: () => result = false,
+              );
+        }
+        box.put("loading", false);
+        box.put(name, result ? value : !value);
+      },
+      settingsButtonMode: SettingsButtonMode.switchBt,
     );
   }
 
