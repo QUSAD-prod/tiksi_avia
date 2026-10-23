@@ -1,11 +1,11 @@
 {
-    "name": "tiksi_avia",
-    "short_name": "tiksi_avia",
+    "name": "TiksiAvia",
+    "short_name": "TiksiAvia",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#EBEDF0",
+    "theme_color": "#2688EB",
+    "description": "Онлайн-табло самолётов и вертолётов аэропорта Тикси",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,113 +1,130 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class Input extends StatelessWidget {
-  const Input({
-    Key? key,
-    required this.hint,
-    required this.controller,
-    required this.isPass,
-    this.keyboardType = TextInputType.text,
-    this.errorEnabled = false,
-    this.errorText,
-    this.maxLenght,
-    this.autocorrect = true,
-    this.onEditingComplete,
-    this.onChanged,
-    this.onTap,
-    this.textInputAction,
-    this.inputFormatters,
-    this.onSubmit,
-    this.focusNode,
-    this.autofillHints,
-    this.labelText,
-    this.readOnly = false,
-    this.suffixIcon,
-  }) : super(key: key);
+import '../theme/vk_colors.dart';
+import '../theme/vk_typography.dart';
 
-  final String hint;
+/// VKUI `Input`. Styling comes from the theme's `inputDecorationTheme`.
+class VkInput extends StatelessWidget {
+  const VkInput({
+    super.key,
+    required this.controller,
+    this.placeholder,
+    this.focusNode,
+    this.keyboardType,
+    this.textInputAction,
+    this.autofillHints,
+    this.inputFormatters,
+    this.obscureText = false,
+    this.autocorrect = true,
+    this.error = false,
+    this.after,
+    this.onChanged,
+    this.onSubmitted,
+    this.onEditingComplete,
+  });
+
   final TextEditingController controller;
-  final bool isPass;
-  final TextInputType? keyboardType;
-  final bool errorEnabled;
-  final String? errorText;
-  final int? maxLenght;
-  final bool autocorrect;
-  final void Function()? onEditingComplete;
-  final void Function(String)? onChanged;
-  final void Function()? onTap;
-  final TextInputAction? textInputAction;
-  final List<TextInputFormatter>? inputFormatters;
-  final void Function(String)? onSubmit;
+  final String? placeholder;
   final FocusNode? focusNode;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
   final Iterable<String>? autofillHints;
-  final String? labelText;
-  final bool readOnly;
-  final Widget? suffixIcon;
+  final List<TextInputFormatter>? inputFormatters;
+  final bool obscureText;
+  final bool autocorrect;
+  final bool error;
+  final Widget? after;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onEditingComplete;
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      readOnly: readOnly,
-      autofillHints: autofillHints,
-      onEditingComplete: onEditingComplete,
-      maxLength: maxLenght,
-      keyboardType: keyboardType,
+    final vk = context.vk;
+    final theme = Theme.of(context).inputDecorationTheme;
+    return TextField(
       controller: controller,
-      inputFormatters: inputFormatters,
-      onFieldSubmitted: onSubmit,
-      textInputAction: textInputAction,
-      obscureText: isPass,
-      autocorrect: autocorrect,
       focusNode: focusNode,
-      cursorRadius: const Radius.circular(2),
-      onTap: onTap == null ? () => {} : onTap!,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      autofillHints: autofillHints,
+      inputFormatters: inputFormatters,
+      obscureText: obscureText,
+      autocorrect: autocorrect,
       onChanged: onChanged,
-      style: const TextStyle(
-        fontSize: 16,
-      ),
+      onSubmitted: onSubmitted,
+      onEditingComplete: onEditingComplete,
+      cursorRadius: const Radius.circular(2),
+      style: VkTypography.text.copyWith(color: vk.textPrimary),
       decoration: InputDecoration(
-        suffixIcon: suffixIcon,
-        labelText: labelText,
-        counterStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+        hintText: placeholder,
+        suffixIcon: after,
+        suffixIconConstraints: const BoxConstraints(
+          minWidth: 44,
+          minHeight: 44,
         ),
-        errorText: errorEnabled ? errorText : null,
-        contentPadding: const EdgeInsets.all(12.0),
-        fillColor: errorEnabled
-            ? Theme.of(context).brightness == Brightness.light
-                ? const Color(0xFFFAEBEB)
-                : const Color(0xFF522E2E)
-            : Theme.of(context).brightness == Brightness.light
-                ? const Color(0xFFf2F3F5)
-                : const Color(0xFF2C2D2E),
-        filled: true,
-        hintStyle: const TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 16,
-        ),
-        hintText: hint,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: errorEnabled
-                ? const Color(0xFFE64646)
-                : Theme.of(context).brightness == Brightness.light
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).primaryColorLight,
-            width: 1,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: errorEnabled
-                ? const Color(0xFFE64646)
-                : Theme.of(context).brightness == Brightness.light
-                    ? Colors.black.withOpacity(0.12)
-                    : Colors.white.withOpacity(0.12),
-            width: 0.5,
+        fillColor: error ? vk.backgroundNegativeTint : null,
+        enabledBorder: error ? theme.errorBorder : null,
+      ),
+    );
+  }
+}
+
+/// Read-only field that opens a picker, like VKUI `CustomSelect`/`DateInput`.
+class VkSelectField extends StatelessWidget {
+  const VkSelectField({
+    super.key,
+    required this.value,
+    required this.onTap,
+    this.placeholder,
+    this.icon,
+  });
+
+  final String? value;
+  final String? placeholder;
+  final IconData? icon;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final vk = context.vk;
+    final empty = value == null || value!.isEmpty;
+    return Material(
+      color: vk.fieldBackground,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: vk.fieldBorderAlpha, width: 0.5),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: SizedBox(
+          height: 44,
+          child: Row(
+            children: [
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  empty ? placeholder ?? '' : value!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: VkTypography.text.copyWith(
+                    color: empty ? vk.textSecondary : vk.textPrimary,
+                    fontFeatures: VkTypography.tabular,
+                  ),
+                ),
+              ),
+              if (onTap != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Icon(
+                    icon ?? Icons.keyboard_arrow_down_rounded,
+                    size: 22,
+                    color: vk.iconSecondary,
+                  ),
+                ),
+            ],
           ),
         ),
       ),

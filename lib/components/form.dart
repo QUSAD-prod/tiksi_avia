@@ -1,48 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
-import 'package:tiksi_avia/components/text.dart';
 
-class FormItem extends StatelessWidget {
-  const FormItem({
-    Key? key,
-    required this.title,
+import '../theme/vk_colors.dart';
+import '../theme/vk_typography.dart';
+
+/// VKUI `FormItem`: a field with a label on top and an optional status below.
+class VkFormItem extends StatelessWidget {
+  const VkFormItem({
+    super.key,
+    required this.top,
     required this.child,
-    this.error = "",
-  }) : super(key: key);
+    this.bottom,
+    this.error = false,
+  });
 
-  final String title;
+  final String top;
   final Widget child;
-  final String error;
+
+  /// Hint or error text under the field.
+  final String? bottom;
+  final bool error;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(bottom: 8.0),
-          child: SecondaryText(
-            text: title,
+    final vk = context.vk;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              top,
+              style: VkTypography.subhead.copyWith(color: vk.textSubhead),
+            ),
           ),
-        ),
-        Container(
-          margin: EdgeInsets.only(bottom: error == "" ? 0.0 : 8.0),
-          child: child,
-        ),
-        error == ""
-            ? Container()
-            : Text(
-                error,
-                style: const TextStyle(
-                  color: Color(0xFFE64646),
-                  fontWeight: FontWeight.w400,
-                  fontSize: 13,
+          child,
+          if (bottom != null && bottom!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                bottom!,
+                style: VkTypography.footnote.copyWith(
+                  color: error ? vk.textNegative : vk.textSecondary,
                 ),
-                textAlign: TextAlign.left,
               ),
-      ],
+            ),
+        ],
+      ),
     );
   }
 }

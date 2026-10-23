@@ -1,16 +1,19 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:tiksi_avia/components/spinner.dart';
-import 'package:tiksi_avia/pages/avia_board_page.dart';
-import 'package:tiksi_avia/pages/fb.dart';
+import 'package:provider/provider.dart';
 
-import '../components/settings_button.dart';
-import '../components/text.dart';
+import '../components/cell.dart';
+import '../components/group.dart';
+import '../components/panel_header.dart';
+import '../components/snackbar.dart';
+import '../data/avia_repository.dart';
+import '../data/flight_route.dart';
+import '../data/settings_store.dart';
+import '../theme/vk_colors.dart';
 
+/// Per-route push subscriptions (one FCM topic per route).
 class NotificationSettingsPage extends StatefulWidget {
-  const NotificationSettingsPage({Key? key}) : super(key: key);
+  const NotificationSettingsPage({super.key});
 
   @override
   State<NotificationSettingsPage> createState() =>
@@ -18,150 +21,57 @@ class NotificationSettingsPage extends StatefulWidget {
 }
 
 class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
-  Fb fb = Fb();
+  final _pending = <String>{};
 
-  @override
-  void initState() {
-    Hive.box("notification settings").put("loading", false);
-    super.initState();
+  Future<void> _toggle(FlightRoute route, bool enabled) async {
+    setState(() => _pending.add(route.name));
+    try {
+      await context.read<AviaRepository>().setRouteNotifications(
+        route,
+        enabled,
+      );
+      await SettingsStore.setRouteNotifications(route, enabled);
+    } catch (e) {
+      if (mounted) showErrorSnackbar(context, e);
+    } finally {
+      if (mounted) setState(() => _pending.remove(route.name));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
+    final vk = context.vk;
+    Widget cell(FlightRoute route) => VkSwitchCell(
+      title: route.title,
+      value: SettingsStore.routeNotifications(route),
+      loading: _pending.contains(route.name),
+      onChanged: (value) => _toggle(route, value),
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Параметры уведомлений'),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: SvgPicture.asset(
-                'assets/back_arrow.svg',
-                color: Theme.of(context).appBarTheme.iconTheme!.color,
-                height: 28,
-                width: 28,
-              ),
-              iconSize: 28,
-              splashRadius: 20,
-            );
-          },
-        ),
-      ),
-      body: ScrollConfiguration(
-        behavior: MyBehavior(),
-        child: ValueListenableBuilder(
-          valueListenable: Hive.box("notification settings").listenable(),
-          builder: (context, Box box, widget) => Stack(
-            children: [
-              ListView(
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  getSeporator(),
-                  getName('РЕЙСЫ'),
-                  getSwitch("Тикси - Борогон", box),
-                  getSwitch("Борогон - Тикси", box),
-                  getSwitch("Тикси - Хара-Улах", box),
-                  getSwitch("Хара-Улах - Тикси", box),
-                  getSwitch("Тикси - Булун", box),
-                  getSwitch("Булун - Тикси", box),
-                  getSwitch("Тикси - Таймылыр", box),
-                  getSwitch("Таймылыр - Тикси", box),
-                  getSwitch("Тикси - Сиктях", box),
-                  getSwitch("Сиктях - Тикси", box),
-                  getSwitch("Тикси - Якутск", box),
-                  getSwitch("Якутск - Тикси", box),
-                  getSwitch("Тикси - Кюсюр", box),
-                  getSwitch("Кюсюр - Тикси", box),
-                  getSwitch("Тикси - Москва", box),
-                  getSwitch("Москва - Тикси", box),
-                  getSwitch("Тикси - Булун-Сиктях", box),
-                  getSwitch("Тикси - Борогон-Хара-Улах", box),
-                ],
-              ),
-              box.get('loading', defaultValue: false)
-                  ? Container(
-                      width: width,
-                      height: height,
-                      color: Colors.black.withOpacity(0.7),
-                      child: const Center(
-                        child: Spinner(),
-                      ),
-                    )
-                  : Container(),
-            ],
+      backgroundColor: vk.background,
+      appBar: const VkPanelHeader(title: 'Уведомления'),
+      body: ValueListenableBuilder(
+        valueListenable: SettingsStore.notifications.listenable(),
+        builder: (context, _, _) => ListView(
+          padding: EdgeInsets.only(
+            top: 4,
+            bottom: MediaQuery.paddingOf(context).bottom + 12,
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget getSwitch(String name, Box box) {
-    return SettingsButton(
-      text: name,
-      value: box.get(name, defaultValue: false),
-      onClickSwitch: (value) async {
-        bool result = true;
-        box.put("loading", true);
-        if (value) {
-          await FirebaseMessaging.instance
-              .subscribeToTopic(
-                fb.getTopic(name),
-              )
-              .timeout(
-                const Duration(seconds: 5),
-                onTimeout: () => result = false,
-              );
-        } else {
-          await FirebaseMessaging.instance
-              .unsubscribeFromTopic(
-                fb.getTopic(name),
-              )
-              .timeout(
-                const Duration(seconds: 5),
-                onTimeout: () => result = false,
-              );
-        }
-        box.put("loading", false);
-        box.put(name, result ? value : !value);
-      },
-      settingsButtonMode: SettingsButtonMode.switchBt,
-    );
-  }
-
-  Widget getName(String name) {
-    return Container(
-      height: 32,
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      child: Center(
-        child: Row(
           children: [
-            SecondaryText(
-              text: name,
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
+            const VkFooter(
+              'Пришлём push, когда диспетчер добавит или изменит рейс '
+              'по выбранному направлению',
             ),
-            Expanded(child: Container()),
+            VkGroup(
+              header: 'Вылет из Тикси',
+              children: FlightRoute.outbound.map(cell).toList(),
+            ),
+            VkGroup(
+              header: 'Прилёт в Тикси',
+              children: FlightRoute.inbound.map(cell).toList(),
+            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget getSeporator() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      height: 16,
-      child: Center(
-        child: Container(
-          height: 0.5,
-          color: (Theme.of(context).brightness == Brightness.light
-                  ? const Color(0xFF363738)
-                  : const Color(0xFFD7D8D9))
-              .withOpacity(0.12),
         ),
       ),
     );

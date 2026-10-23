@@ -1,153 +1,115 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-enum ButtonMode { primary, outlined, text }
+import '../theme/vk_colors.dart';
+import '../theme/vk_typography.dart';
 
-class Button extends StatelessWidget {
-  const Button({
-    Key? key,
+enum VkButtonMode { primary, secondary, tertiary }
+
+enum VkButtonSize { m, l }
+
+/// VKUI `Button`.
+class VkButton extends StatelessWidget {
+  const VkButton({
+    super.key,
     required this.text,
-    required this.onClick,
-    this.icon,
-    this.mode = ButtonMode.primary,
-    this.active = true,
-    this.textButtonColor,
-  }) : super(key: key);
+    required this.onPressed,
+    this.mode = VkButtonMode.primary,
+    this.size = VkButtonSize.l,
+    this.before,
+    this.stretched = false,
+    this.loading = false,
+    this.negative = false,
+  });
 
   final String text;
-  final Function() onClick;
-  final ButtonMode mode;
-  final Widget? icon;
-  final bool active;
-  final Color? textButtonColor;
+
+  /// `null` disables the button.
+  final VoidCallback? onPressed;
+  final VkButtonMode mode;
+  final VkButtonSize size;
+  final Widget? before;
+  final bool stretched;
+  final bool loading;
+
+  /// Red appearance for destructive actions.
+  final bool negative;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        border: getBorder(context),
-        color: getBackground(context),
+    final vk = context.vk;
+    final enabled = onPressed != null && !loading;
+    final (Color background, Color foreground) = switch (mode) {
+      VkButtonMode.primary =>
+        negative
+            ? (vk.textNegative, Colors.white)
+            : (vk.backgroundAccentThemed, vk.textContrastThemed),
+      VkButtonMode.secondary => (
+        vk.backgroundSecondaryAlpha,
+        negative ? vk.textNegative : vk.textAccentThemed,
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: active ? () => onClick() : null,
-          borderRadius: BorderRadius.circular(8.0),
-          highlightColor: getHightlight(context),
-          child: getChild(context),
+      VkButtonMode.tertiary => (
+        Colors.transparent,
+        negative ? vk.textNegative : vk.textAccentThemed,
+      ),
+    };
+    final height = size == VkButtonSize.l ? 44.0 : 36.0;
+    final radius = BorderRadius.circular(size == VkButtonSize.l ? 10 : 8);
+
+    final label = Row(
+      mainAxisSize: stretched ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (before != null) ...[
+          IconTheme(
+            data: IconThemeData(color: foreground, size: 20),
+            child: before!,
+          ),
+          const SizedBox(width: 6),
+        ],
+        Flexible(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style:
+                (size == VkButtonSize.l
+                        ? VkTypography.headline1
+                        : VkTypography.headline2)
+                    .copyWith(color: foreground),
+          ),
+        ),
+      ],
+    );
+
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 150),
+      opacity: enabled || loading ? 1 : 0.48,
+      child: SizedBox(
+        height: height,
+        width: stretched ? double.infinity : null,
+        child: Material(
+          color: background,
+          borderRadius: radius,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: enabled ? onPressed : null,
+            splashColor: foreground.withValues(alpha: 0.12),
+            highlightColor: foreground.withValues(alpha: 0.08),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: size == VkButtonSize.l ? 20 : 16,
+              ),
+              child: Center(
+                widthFactor: 1,
+                child: loading
+                    ? CupertinoActivityIndicator(color: foreground)
+                    : label,
+              ),
+            ),
+          ),
         ),
       ),
     );
-  }
-
-  Color? getHightlight(BuildContext context) {
-    switch (mode) {
-      case ButtonMode.primary:
-        return Theme.of(context).brightness == Brightness.light
-            ? Colors.white.withOpacity(0.2)
-            : Colors.black.withOpacity(0.2);
-      case ButtonMode.outlined:
-      case ButtonMode.text:
-        return null;
-    }
-  }
-
-  Color getBackground(BuildContext context) {
-    switch (mode) {
-      case ButtonMode.primary:
-        return Theme.of(context).brightness == Brightness.light
-            ? Theme.of(context).primaryColor.withOpacity(active ? 1.0 : 0.4)
-            : const Color(0xFFE1E2E1).withOpacity(active ? 1.0 : 0.4);
-      case ButtonMode.outlined:
-        return Colors.transparent;
-      case ButtonMode.text:
-        return Colors.transparent;
-    }
-  }
-
-  Border? getBorder(BuildContext context) {
-    switch (mode) {
-      case ButtonMode.primary:
-        return null;
-      case ButtonMode.outlined:
-        return Border.all(
-          color: Theme.of(context).brightness == Brightness.light
-              ? Theme.of(context).primaryColor.withOpacity(active ? 1.0 : 0.4)
-              : const Color(0xFFE1E2E1).withOpacity(active ? 1.0 : 0.4),
-          width: 1.0,
-        );
-      case ButtonMode.text:
-        return null;
-    }
-  }
-
-  Color getForegroundColor(BuildContext context) {
-    switch (mode) {
-      case ButtonMode.primary:
-        return Theme.of(context).brightness == Brightness.light
-            ? Theme.of(context)
-                .primaryTextTheme
-                .button!
-                .color!
-                .withOpacity(active ? 1.0 : 0.4)
-            : Theme.of(context).backgroundColor.withOpacity(active ? 1.0 : 0.4);
-      case ButtonMode.outlined:
-        return Theme.of(context).brightness == Brightness.light
-            ? Theme.of(context).primaryColor.withOpacity(active ? 1.0 : 0.4)
-            : const Color(0xFFE1E2E1).withOpacity(active ? 1.0 : 0.4);
-      case ButtonMode.text:
-        return Theme.of(context).brightness == Brightness.light
-            ? Theme.of(context).primaryColor.withOpacity(active ? 1.0 : 0.4)
-            : const Color(0xFFE1E2E1).withOpacity(active ? 1.0 : 0.4);
-    }
-  }
-
-  Widget getChild(BuildContext context) {
-    if (icon != null) {
-      return Container(
-        margin: mode != ButtonMode.text
-            ? const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0)
-            : const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
-        child: Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 16,
-                height: 16,
-                margin: const EdgeInsets.only(right: 8.0),
-                child: Center(child: icon),
-              ),
-              Text(
-                text,
-                style: TextStyle(
-                  color: textButtonColor ?? getForegroundColor(context),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      );
-    } else {
-      return Container(
-        margin: mode != ButtonMode.text
-            ? const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0)
-            : const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: getForegroundColor(context),
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
   }
 }

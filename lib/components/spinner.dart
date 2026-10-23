@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-class Spinner extends StatefulWidget {
-  const Spinner({Key? key}) : super(key: key);
+import '../theme/vk_colors.dart';
+import 'vk_icon.dart';
+
+/// VKUI `Spinner` (large).
+class VkSpinner extends StatefulWidget {
+  const VkSpinner({super.key, this.size = 44});
+
+  final double size;
 
   @override
-  SpinnerState createState() => SpinnerState();
+  State<VkSpinner> createState() => _VkSpinnerState();
 }
 
-class SpinnerState extends State<Spinner> with TickerProviderStateMixin {
-  late AnimationController _controller;
+class _VkSpinnerState extends State<VkSpinner>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 700),
+    vsync: this,
+  )..repeat();
 
   @override
-  initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    )..repeat();
-  }
-
-  @override
-  dispose() {
+  void dispose() {
     _controller.dispose();
     super.dispose();
   }
@@ -30,15 +30,11 @@ class SpinnerState extends State<Spinner> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Center(
       child: RotationTransition(
-        turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-        alignment: Alignment.center,
-        child: SvgPicture.asset(
-          "assets/spinner.svg",
-          height: 44,
-          width: 44,
-          color: Theme.of(context).brightness == Brightness.light
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).primaryColorLight,
+        turns: _controller,
+        child: VkIcon(
+          'spinner',
+          size: widget.size,
+          color: context.vk.iconSecondary,
         ),
       ),
     );
